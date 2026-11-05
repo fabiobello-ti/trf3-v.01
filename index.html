@@ -3,204 +3,471 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Estudos TRF 3ª Região - TI</title>
-    <!-- Chart.js para os gráficos -->
+    <title>Painel de Estudos - TRF 3ª Região 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #1e3a8a;
-            --primary-light: #3b82f6;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text: #0f172a;
-            --text-secondary: #64748b;
-            --border: #e2e8f0;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 20px; line-height: 1.5; }
-        .container { max-width: 1200px; margin: 0 auto; }
-
-        header { background: var(--card-bg); padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px; border: 1px solid var(--border); }
-        .header-title { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-        h1 { font-size: 1.6rem; color: var(--primary); }
-
-        .status-sync { font-size: 0.85rem; padding: 6px 12px; border-radius: 20px; font-weight: 600; display: inline-block; }
-        .sync-loading { background: #e0f2fe; color: #0369a1; }
-        .sync-success { background: #dcfce7; color: #15803d; }
-        .sync-error { background: #fee2e2; color: #b91c1c; }
-
-        .cargo-selector { display: flex; gap: 12px; margin-top: 16px; }
-        .btn-cargo { padding: 10px 20px; border: 2px solid var(--primary-light); background: transparent; color: var(--primary-light); border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .btn-cargo.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .card-title { font-size: 0.875rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-bottom: 8px; }
-        .card-value { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
-        .progress-bar-bg { width: 100%; height: 8px; background: var(--border); border-radius: 4px; margin-top: 10px; overflow: hidden; }
-        .progress-bar-fill { height: 100%; background: var(--primary-light); width: 0%; transition: width 0.3s; }
-
-        .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
-        .search-box { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; width: 300px; max-width: 100%; }
-
-        .subject-group { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; }
-        .subject-header { background: #f1f5f9; padding: 16px 20px; font-weight: 700; color: var(--primary); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px 20px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-        th { background: #fafafa; color: var(--text-secondary); font-weight: 600; }
-        tr:hover { background-color: #f8fafc; }
-
-        .checkbox-cell { text-align: center; width: 80px; }
-        .checkbox-cell input { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
-
-        .questions-input { display: flex; align-items: center; gap: 6px; }
-        .questions-input input { width: 60px; padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; text-align: center; }
-
-        .badge-accuracy { padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; }
-        .badge-good { background: #dcfce7; color: #166534; }
-        .badge-warning { background: #fef3c7; color: #92400e; }
-        .badge-danger { background: #fee2e2; color: #991b1b; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .status-sync { font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; display: inline-block; }
+        .sync-loading { background: #0369a1; color: #e0f2fe; }
+        .sync-success { background: #15803d; color: #dcfce7; }
+        .sync-error { background: #b91c1c; color: #fee2e2; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <div class="header-title">
-                <div>
-                    <h1>Painel de Estudos - TRF 3ª Região (VUNESP 2026)</h1>
-                    <p style="color: var(--text-secondary);">Acompanhamento de Evolução Sincronizado na Nuvem</p>
-                </div>
-                <div>
-                    <span id="sync-status" class="status-sync sync-loading">Carregando dados...</span>
-                </div>
-            </div>
-            <div class="cargo-selector">
-                <button class="btn-cargo active" onclick="switchCargo('analista', event)">Analista Judiciário (Suporte em TI)</button>
-                <button class="btn-cargo" onclick="switchCargo('tecnico', event)">Técnico Judiciário (Suporte Técnico)</button>
-            </div>
-        </header>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
 
-        <div class="dashboard">
-            <div class="card">
-                <div class="card-title">Cobertura Global da Teoria</div>
-                <div class="card-value" id="theory-perc">0%</div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill" id="theory-bar"></div></div>
+    <!-- Header Navigation -->
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-blue-600 rounded-lg text-white">
+                    <i class="fa-solid fa-graduation-cap text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight text-white">Guia de Estudos TRF3 (Nuvem)</h1>
+                    <p class="text-xs text-slate-400">Edital 01/2026 & Retificação 02/2026 — VUNESP</p>
+                </div>
             </div>
-            <div class="card">
-                <div class="card-title">Resumos Concluídos</div>
-                <div class="card-value" id="summary-perc">0%</div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill" id="summary-bar"></div></div>
+
+            <!-- Status de Sincronização & Selector Cargo -->
+            <div class="flex items-center space-x-4">
+                <div>
+                    <span id="syncStatus" class="status-sync sync-loading">Conectando à nuvem...</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <label class="text-xs text-slate-400 font-medium hidden sm:inline">CARGO:</label>
+                    <select id="roleSelector" onchange="changeRole(this.value)" class="bg-slate-700 text-slate-100 text-sm font-semibold rounded-lg px-3 py-2 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="analista">Analista Judiciário - Suporte em TI (Cód. 002)</option>
+                        <option value="tecnico">Técnico Judiciário - Suporte Técnico (Cód. 007)</option>
+                    </select>
+                </div>
             </div>
-            <div class="card">
-                <div class="card-title">Revisões Realizadas</div>
-                <div class="card-value" id="revision-perc">0%</div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill" id="revision-bar"></div></div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+        <!-- Top Metrics Cards & Chart -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Cards de Indicadores -->
+            <div class="lg:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
+                    <span class="text-xs text-slate-400 font-medium uppercase">Teoria Estudada</span>
+                    <div class="my-2">
+                        <span id="metricTheoryVal" class="text-2xl font-bold text-blue-400">0%</span>
+                        <span id="metricTheorySub" class="text-xs text-slate-500 block">0 / 0 tópicos</span>
+                    </div>
+                    <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                        <div id="barTheory" class="bg-blue-500 h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
+                    <span class="text-xs text-slate-400 font-medium uppercase">Resumos Feitos</span>
+                    <div class="my-2">
+                        <span id="metricSummaryVal" class="text-2xl font-bold text-indigo-400">0%</span>
+                        <span id="metricSummarySub" class="text-xs text-slate-500 block">0 / 0 tópicos</span>
+                    </div>
+                    <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                        <div id="barSummary" class="bg-indigo-500 h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
+                    <span class="text-xs text-slate-400 font-medium uppercase">Precisão de Questões</span>
+                    <div class="my-2">
+                        <span id="metricQuestionsVal" class="text-2xl font-bold text-emerald-400">0%</span>
+                        <span id="metricQuestionsSub" class="text-xs text-slate-500 block">0 / 0 resolvidas</span>
+                    </div>
+                    <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                        <div id="barQuestions" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
+                    <span class="text-xs text-slate-400 font-medium uppercase">Revisões Realizadas</span>
+                    <div class="my-2">
+                        <span id="metricRevisionVal" class="text-2xl font-bold text-amber-400">0%</span>
+                        <span id="metricRevisionSub" class="text-xs text-slate-500 block">0 / 0 tópicos</span>
+                    </div>
+                    <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                        <div id="barRevision" class="bg-amber-500 h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Card de Contagem Regressiva e Meta Global -->
+                <div class="col-span-2 sm:col-span-4 bg-gradient-to-r from-slate-800 to-slate-800/80 p-4 rounded-xl border border-slate-700 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-regular fa-clock text-amber-400 text-2xl"></i>
+                        <div>
+                            <span class="text-xs text-slate-400 uppercase font-bold tracking-wider">Contagem Regressiva para a Prova</span>
+                            <div id="countdown" class="text-sm font-semibold text-slate-200">Calculando tempo restante...</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="resetData()" class="px-3 py-1.5 text-xs text-red-400 hover:text-red-300 bg-red-950/40 hover:bg-red-900/50 rounded-lg border border-red-800/40 transition">
+                            <i class="fa-solid fa-rotate-right mr-1"></i> Zerar Dados na Nuvem
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="card">
-                <div class="card-title">Desempenho Geral em Questões</div>
-                <div class="card-value" id="accuracy-perc">0%</div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill" id="accuracy-bar" style="background: var(--success);"></div></div>
+
+            <!-- Gráfico Radar/Progresso -->
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Progresso por Matéria</h3>
+                    <span class="text-xs text-slate-400" id="chartOverall">0% Global</span>
+                </div>
+                <div class="relative flex-1 flex items-center justify-center min-h-[180px]">
+                    <canvas id="progressChart"></canvas>
+                </div>
             </div>
         </div>
 
-        <div class="controls">
-            <input type="text" class="search-box" id="search-input" placeholder="Buscar assunto no edital..." oninput="filterTopics()">
+        <!-- Abas de Navegação das Disciplinas -->
+        <div class="border-b border-slate-700 flex overflow-x-auto space-x-2 pb-2 custom-scrollbar" id="subjectTabs">
+            <!-- As abas serão injetadas via JavaScript -->
         </div>
 
-        <div id="content-container"></div>
-    </div>
+        <!-- Tabela Verticalizada de Tópicos -->
+        <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-xl">
+            <div class="p-4 bg-slate-800/90 border-b border-slate-700 flex flex-wrap justify-between items-center gap-3">
+                <div>
+                    <h2 id="currentSubjectTitle" class="text-base font-bold text-white">Carregando Tópicos...</h2>
+                    <p id="currentSubjectSubtitle" class="text-xs text-slate-400">Marque seus estudos conforme evolui</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="searchInput" onkeyup="filterTopics()" placeholder="Buscar tópico ou palavra-chave..." class="bg-slate-700 text-xs text-slate-200 rounded-lg px-3 py-2 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64">
+                </div>
+            </div>
 
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-300">
+                    <thead class="bg-slate-900/80 text-slate-400 uppercase font-bold border-b border-slate-700">
+                        <tr>
+                            <th scope="col" class="py-3 px-4 w-12 text-center">#</th>
+                            <th scope="col" class="py-3 px-4">Tópico do Edital</th>
+                            <th scope="col" class="py-3 px-2 text-center w-20">Teoria</th>
+                            <th scope="col" class="py-3 px-2 text-center w-20">Resumo</th>
+                            <th scope="col" class="py-3 px-4 text-center w-48">Questões (Resolvidas / Acertos)</th>
+                            <th scope="col" class="py-3 px-2 text-center w-20">Revisão</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topicsTableBody" class="divide-y divide-slate-700/60">
+                        <!-- Tópicos serão injetados via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 border-t border-slate-700 py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            TRF 3ª Região — Painel de Monitoramento de Estudos | Sincronizado via JSONBin.io
+        </div>
+    </footer>
+
+    <!-- Script Logic -->
     <script>
-        // CONFIGURAÇÃO DO JSONBIN.IO
-        const BIN_ID = '6aec0037ac6210605a6de5e9'; 
-        const MASTER_KEY = '$2a$10$ujPVLI/czWsKqPrcYiR/neml.9g0xAlzDLGarjgM4hZbRUtUcBJgu'; 
+        // CONFIGURAÇÃO DO JSONBIN.IO (Substitua pelos seus dados reais obtidos no jsonbin.io)
+        const BIN_ID = '6aec0037ac6210605a6de5e9';
+        const MASTER_KEY = '$2a$10$ujPVLI/czWsKqPrcYiR/neml.9g0xAlzDLGarjgM4hZbRUtUcBJgu';
 
-        const editalData = {
-            analista: [
+        // Data Structure for Topics
+        const syllabusData = {
+            common: [
                 {
-                    materia: "Conhecimentos Gerais (Língua Portuguesa, Raciocínio, Ética, Direitos Humanos, Sustentabilidade)",
-                    topicos: [
-                        "Língua Portuguesa: Ortografia, Crase, Compreensão de texto, Morfossintaxe, Regência e Concordância",
-                        "Raciocínio Lógico-Matemático: Lógica de proposições, Sequências, Proporcionalidade e Porcentagem",
-                        "Ética no Serviço Público: Lei 8.112/90, Lei 8.429/92 (Improbidade), Lei 12.846/13, Res. CJF 147/11, LGPD, LAI",
-                        "Direitos Humanos e Acessibilidade: Declaração Universal, Agenda 2030, Lei 13.146/15 (Estatuto da PcD)",
-                        "Sustentabilidade: Princípio constitucional, Agenda ONU, Res. CNJ 433/21, Res. CJF 709/21"
+                    id: "pt",
+                    name: "Língua Portuguesa & Raciocínio Analítico",
+                    topics: [
+                        "Redação Oficial",
+                        "Ortografia e acentuação gráfica",
+                        "Emprego do sinal indicativo de crase",
+                        "Compreensão e interpretação de textos de gêneros variados",
+                        "Relação do texto com seu contexto histórico",
+                        "Denotação e conotação; Figuras de linguagem",
+                        "Discurso direto, indireto e indireto livre; Intertextualidade",
+                        "Morfossintaxe; Elementos estruturais e formação de palavras",
+                        "Sinonímia e antonímia; Pontuação",
+                        "Pronomes (emprego, colocação e referência)",
+                        "Concordância nominal e concordância verbal",
+                        "Flexão nominal e verbal; Vozes do verbo; Correlação de tempos e modos verbais",
+                        "Regência nominal e regência verbal",
+                        "Coordenação e subordinação; Conectivos; Coesão e coerência",
+                        "Reescrita de frases (organização, equivalência e transformação)",
+                        "Raciocínio analítico e argumentação; Senso crítico; Argumentos falaciosos e apelativos"
                     ]
                 },
                 {
-                    materia: "Conhecimentos Específicos: Suporte em Tecnologia da Informação (Analista)",
-                    topicos: [
-                        "Redes de Computadores: OSI/TCP-IP, IPv4/IPv6, OSPF, BGP, VLANs, STP, 802.11 (Wi-Fi), SD-WAN, Zabbix/Wireshark",
-                        "Sistemas Operacionais: Windows Server (Active Directory, GPO, DNS, DHCP) e Linux (LVM, systemd, SELinux, Bash, Ansible)",
-                        "Virtualização e DevOps: VMware vSphere, Hyper-V, Docker, Kubernetes, Rancher, esteiras CI/CD",
-                        "Armazenamento e Backup: SAN/NAS, RAID, Veeam Backup, RPO/RTO, retenção, S3-compatible",
-                        "Computação em Nuvem: Azure (Landing Zone, Entra ID, VM, VNet, Cost Management, FinOps, Defender)",
-                        "Segurança da Informação: Hardening, EDR, PKI/ICP-Brasil, VPN (IPSec/SSL), NGFW, IDS/IPS, DRP",
-                        "Governança e Gestão de TI: ITIL v4 (SVS), Lei 14.133/2021 (ETP, TR, Gestão Contratual), IN SGD/MGI 1/2024",
-                        "Normativos do Poder Judiciário: LGPD no setor público, Res. CNJ 396/21 (ENSEC-PJ), Res. CNJ 335/20 (PDPJ-Br), Res. CNJ 522/23"
+                    id: "rlm",
+                    name: "Raciocínio Lógico-Matemático",
+                    topics: [
+                        "Estrutura lógica de relações arbitrárias entre pessoas, lugares, objetos ou eventos",
+                        "Dedução de novas informações de relações e avaliação de condições",
+                        "Lógica das situações: raciocínio verbal, matemático, sequencial, espacial e temporal",
+                        "Formação de conceitos, discriminação de elementos e validade de hipóteses",
+                        "Proporcionalidade e porcentagem: regra de três simples, cálculos percentuais, acréscimos e descontos"
+                    ]
+                },
+                {
+                    id: "etica",
+                    name: "Ética, Integridade & Legislação",
+                    topics: [
+                        "Ética e integridade: conceitos, princípios, valores e exercício da cidadania",
+                        "Regime Disciplinar Federal: Lei nº 8.112/1990 (deveres, proibições, responsabilidades e penalidades)",
+                        "Lei nº 8.429/1992 e alterações da Lei nº 14.230/2021 (Improbidade Administrativa)",
+                        "Lei nº 12.846/2013 (Lei Anticorrupção)",
+                        "Lei nº 9.784/1999 (Processo Administrativo Federal)",
+                        "Código de Conduta da Justiça Federal (Resolução CJF nº 147/2011)",
+                        "Comitê Gestor do Código de Conduta da JF3R (Portaria CJF 116/2012 e Portaria PRES 4.657/2026)",
+                        "Sistemas de Integridade no Judiciário (Res. CNJ 410/2021) e Governança Colaborativa JF3R (Res. PRES 426/2021)",
+                        "Prevenção do Assédio e Discriminação (Res. CNJ 351/2020) e Comissões Locais no TRF3",
+                        "Lei Geral de Proteção de Dados Pessoais - LGPD (Lei nº 13.709/2018)",
+                        "Lei de Acesso à Informação - LAI (Lei nº 12.527/2011)"
+                    ]
+                },
+                {
+                    id: "dh",
+                    name: "Direitos Humanos & Acessibilidade",
+                    topics: [
+                        "Teoria geral dos direitos fundamentais; Direitos Humanos e Direitos Fundamentais",
+                        "Declaração Universal dos Direitos Humanos; Agenda 2030 da ONU",
+                        "Convenção sobre os Direitos das Pessoas com Deficiência (Decreto nº 6.949/2009)",
+                        "Resolução CNJ nº 401/2021 (Acessibilidade e inclusão no Poder Judiciário)",
+                        "Estatuto da Pessoa com Deficiência (Lei nº 13.146/2015; Lei nº 11.126/2005 e CF/88)",
+                        "Normas para promoção da acessibilidade (Lei 10.098/2000; Lei 7.853/1989; Dec. 5.296/2004)",
+                        "Prioridade de atendimento às pessoas com deficiência (Lei 10.048/2000; Lei 14.364/2022)",
+                        "Normas de apoio às pessoas com deficiência e integração social (Decreto nº 3.298/1999)"
+                    ]
+                },
+                {
+                    id: "sust",
+                    name: "Sustentabilidade & Meio Ambiente",
+                    topics: [
+                        "Princípio do desenvolvimento sustentável na CF/88; Objetivos de Desenvolvimento Sustentável (ODS)",
+                        "Contratações sustentáveis na Nova Lei de Licitações (Lei nº 14.133/2021)",
+                        "Política Nacional sobre Mudança do Clima (Lei nº 12.187/2009)",
+                        "Política Nacional do Poder Judiciário para o Clima e Meio Ambiente (Resolução CNJ nº 433/2021)",
+                        "Política de Sustentabilidade da Justiça Federal (Resolução CJF nº 709/2021)"
+                    ]
+                }
+            ],
+            analista: [
+                {
+                    id: "an_redes",
+                    name: "Redes & Comunicação de Dados",
+                    topics: [
+                        "Engenharia de Infraestrutura e Redes: planejamento, implantação, gestão e evolução",
+                        "Topologias de redes (LAN, MAN, WAN, WLAN, Datacenter); Modelo OSI e pilha TCP/IP",
+                        "Endereçamento IPv4: classful, CIDR, subnetting, supernetting, VLSM, NAT e PAT",
+                        "Endereçamento IPv6: notação, tipos de endereço, autoconfiguração e coexistência (dual-stack, tunelamento)",
+                        "Protocolos de roteamento estáticos e dinâmicos (RIP, OSPF, EIGRP, BGP)",
+                        "Switching: VLANs (802.1Q), Spanning Tree (STP/RSTP/MSTP), LACP/802.3ad, QoS",
+                        "Redes sem fio: IEEE 802.11 (a/b/g/n/ac/ax/be), controladores WLAN, autenticação (WPA2/WPA3, 802.1X)",
+                        "Protocolos de aplicação: DNS, DHCP, NTP, FTP/SFTP, SSH, HTTP/HTTPS, SMTP, SNMP, LDAP, Syslog",
+                        "Gerenciamento e monitoramento: SNMP v2/v3, NetFlow/sFlow, Zabbix, Grafana, PRTG, Wireshark",
+                        "SD-WAN e Redes Definidas por Software (SDN)"
+                    ]
+                },
+                {
+                    id: "an_so",
+                    name: "Sistemas Operacionais & Automação",
+                    topics: [
+                        "Windows Server (2016/2019/2022): instalação, configuração e administração avançada",
+                        "Active Directory (AD DS): florestas, domínios, sites, GPO, delegação, replicação e DNS/DHCP integrados",
+                        "Serviços Windows: File Server, DFS, FSLogix, Failover Clustering, RDS",
+                        "Linux corporativo (Red Hat/AlmaLinux, Debian/Ubuntu): EXT4, XFS, BTRFS, LVM",
+                        "Gerenciamento Linux: RPM/DNF, DEB/APT, systemd, SELinux/AppArmor, Bash, auditoria",
+                        "Automação e IaC: Ansible (playbooks, roles, inventários) e conceitos de Infraestrutura como Código",
+                        "Alta disponibilidade e clustering: HA, heartbeat, quórum e balanceamento de carga"
+                    ]
+                },
+                {
+                    id: "an_virt",
+                    name: "Virtualização, Contêineres & DevOps",
+                    topics: [
+                        "Hypervisors Tipo 1 e 2; VMware vSphere/ESXi (vCenter, clusters, vMotion, HA, DRS, vSAN, backup de VMs)",
+                        "Microsoft Hyper-V; Virtualização de Desktops (VDI): RDS e VMware Horizon",
+                        "Docker: imagens, containers, Dockerfile, volumes e redes",
+                        "Kubernetes: pods, deployments, services, namespaces, ingress, ConfigMaps e Secrets",
+                        "Rancher: gestão de clusters K8s; DevOps: CI/CD aplicado à infraestrutura e pipelines"
+                    ]
+                },
+                {
+                    id: "an_storage",
+                    name: "Armazenamento & Backup",
+                    topics: [
+                        "Arquiteturas de storage: DAS, NAS, SAN (Fibre Channel e iSCSI) e SDS",
+                        "Sistemas de arquivos distribuídos: CIFS/SMB, NFS e S3-compatible storage",
+                        "Arranjos RAID (0, 1, 5, 6, 10): desempenho, tolerância a falhas e resiliência",
+                        "Backup e DR: completo, incremental, diferencial, sintético, RPO, RTO, deduplicação e replicação",
+                        "Soluções de mercado: Veeam, Dell PowerProtect, Cohesity e Commvault",
+                        "Capacity planning e monitoramento de capacidade de storage"
+                    ]
+                },
+                {
+                    id: "an_cloud",
+                    name: "Computação em Nuvem (Azure)",
+                    topics: [
+                        "NIST SP 800-145: IaaS, PaaS, SaaS, CaaS e modelos de implantação",
+                        "Microsoft Azure: arquitetura, regiões, zonas de disponibilidade, Azure Landing Zone",
+                        "Serviços Azure: VMs, VNet, NSG, Azure AD (Entra ID), Storage, Backup, Monitor e Log Analytics",
+                        "Migração (Azure Migrate); Gestão de identidades: SSO, MFA, RBAC, Conditional Access, PIM",
+                        "FinOps e gestão de custos: monitoramento, budgets e rightsizing",
+                        "Segurança em nuvem: responsabilidade compartilhada e Microsoft Defender for Cloud"
+                    ]
+                },
+                {
+                    id: "an_sec",
+                    name: "Segurança da Informação",
+                    topics: [
+                        "Hardening de SO, servidores e ativos de rede; Gestão de patches e correções",
+                        "Proteção de endpoints: EDR, antivírus corporativo e controle de dispositivos",
+                        "Criptografia aplicada: TLS/SSL, certificados digitais, PKI e estrutura da ICP-Brasil",
+                        "VPN: IPSec, SSL/TLS VPN, split e full tunneling",
+                        "Segurança de perímetro: ACLs, firewalls (stateful e NGFW), IDS/IPS, NAC, proxy, zonas",
+                        "Continuidade de serviços de TI: Plano de Recuperação de Desastres (DRP) e redundância"
+                    ]
+                },
+                {
+                    id: "an_gov",
+                    name: "Governança & Normativos Judiciários",
+                    topics: [
+                        "ITIL v4: Sistema de Valor de Serviço (SVS), incidentes, problemas, mudanças, ativos e CMDB",
+                        "Contratações de TI (Lei 14.133/2021 e IN SGD/MGI 1/2024): ETP, PTI e Termo de Referência (TR)",
+                        "Gestão e fiscalização de contratos de infraestrutura de TI no setor público",
+                        "Estratégia Nacional de Segurança Cibernética do Judiciário (Res. CNJ 396/2021 e Portaria CNJ 162/2021)",
+                        "Plataforma Digital do Poder Judiciário - PDPJ-Br (Resolução CNJ nº 335/2020)",
+                        "Modelo de Requisitos para Sistemas Informatizados do Judiciário (Resolução CNJ nº 522/2023)"
                     ]
                 }
             ],
             tecnico: [
                 {
-                    materia: "Conhecimentos Gerais (Língua Portuguesa, Raciocínio, Ética, Direitos Humanos, Sustentabilidade)",
-                    topicos: [
-                        "Língua Portuguesa: Ortografia, Crase, Compreensão de texto, Morfossintaxe, Regência e Concordância",
-                        "Raciocínio Lógico-Matemático: Lógica de proposições, Sequências, Proporcionalidade e Porcentagem",
-                        "Ética no Serviço Público: Lei 8.112/90, Lei 8.429/92 (Improbidade), Lei 12.846/13, Res. CJF 147/11, LGPD, LAI",
-                        "Direitos Humanos e Acessibilidade: Declaração Universal, Agenda 2030, Lei 13.146/15 (Estatuto da PcD)",
-                        "Sustentabilidade: Princípio constitucional, Agenda ONU, Res. CNJ 433/21, Res. CJF 709/21"
+                    id: "tec_hw",
+                    name: "Hardware & Arquitetura",
+                    topics: [
+                        "Placa-mãe, processadores (multi-core), memórias (RAM, cache, ROM) e barramentos",
+                        "Dispositivos de armazenamento: HDs (SATA/SAS), SSDs (SATA/NVMe M.2) e conceitos de RAID",
+                        "Periféricos: impressoras laser e jato de tinta (configuração e filas), monitores, scanners, headsets",
+                        "Dispositivos móveis (iOS e Android) e gerenciamento com Microsoft Intune",
+                        "Diagnóstico de falhas e substituição física de componentes"
                     ]
                 },
                 {
-                    materia: "Conhecimentos Específicos: Suporte Técnico (Técnico)",
-                    topicos: [
-                        "Hardware e Arquitetura: Placa-mãe, Processadores, Memórias, SSDs/HDs, RAID, Periféricos, Intune",
-                        "Sistemas Operacionais: Windows 10/11, Windows Server básico (AD/GPO/DNS), Linux Ubuntu/Debian (terminal, apt)",
-                        "Produtividade e Colaboração: MS-365 (Word, Excel, Teams, OneDrive, SharePoint), Navegadores, Tokens/Smart Cards (ICP-Brasil)",
-                        "Redes Aplicadas ao Suporte: Modelo OSI/TCP-IP, IPv4, ping, traceroute, nslookup, netstat, Wi-Fi 802.11, VPN, Cabeamento Cat5e/Cat7",
-                        "Segurança da Informação: Prevenção de Malware/Phishing/Ransomware, Antivírus/EDR, BitLocker, Firewall do Windows, LGPD",
-                        "Service Desk e ITIL v4: Central de Serviços, Incidentes, Requisições, SLAs, Ferramentas ITSM (GLPI, Jira, OTRS)",
-                        "Normativos do Poder Judiciário: LGPD, Res. CNJ 335/20 (PDPJ-Br), Res. CNJ 522/23, Res. CNJ 396/21 (ENSEC-PJ)"
+                    id: "tec_so",
+                    name: "Sistemas Operacionais & AD",
+                    topics: [
+                        "Windows 10 e Windows 11: instalação, usuários locais, eventos, UAC e Windows Update",
+                        "Windows Server (operação): Server Manager e serviços básicos de DNS e DHCP",
+                        "Active Directory (operação): criação de usuários, reset de senhas, ingresso no domínio e GPOs",
+                        "Linux (Ubuntu/Debian): comandos de terminal, manipulação de arquivos, usuários e apt",
+                        "Instalação de drivers de dispositivos; Noções de Virtualização de Desktops (RDS)"
+                    ]
+                },
+                {
+                    id: "tec_colab",
+                    name: "Ferramentas de Produtividade & Colaboração",
+                    topics: [
+                        "Suíte MS-Office 365: Word, Excel, PowerPoint e Outlook (configuração e troubleshooting)",
+                        "Microsoft Teams: canais, reuniões e integração com SharePoint e OneDrive",
+                        "Sincronização e permissões no OneDrive e SharePoint",
+                        "Navegadores (Edge e Chrome): cache, extensões, proxy e certificados de segurança",
+                        "Certificação digital: instalação e uso de tokens/smart cards (ICP-Brasil); Suporte a videoconferência"
+                    ]
+                },
+                {
+                    id: "tec_redes",
+                    name: "Redes Aplicadas ao Suporte",
+                    topics: [
+                        "Conceitos básicos: Modelo OSI, pilha TCP/IP, endereçamento IPv4 e NAT",
+                        "Diagnóstico de conectividade: ping, traceroute, nslookup, ipconfig e netstat",
+                        "Redes sem fio (padrões 802.11n/ac/ax) e autenticação",
+                        "Configuração e suporte a clientes VPN (SSL e IPSec)",
+                        "Impressão em rede e gerenciamento de servidores de impressão",
+                        "Noções de cabeamento estruturado (categorias Cat5e a Cat7 e conexões físicas)"
+                    ]
+                },
+                {
+                    id: "tec_sec",
+                    name: "Segurança da Informação",
+                    topics: [
+                        "Conceitos: confidencialidade, integridade e disponibilidade",
+                        "Prevenção de malwares/fraudes: phishing, ransomware, vírus, worms e engenharia social",
+                        "Operação de antivírus corporativo e agentes EDR; Configuração do Firewall do Windows",
+                        "Criptografia de disco local com BitLocker",
+                        "Noções básicas de LGPD (Lei nº 13.709/2018) no atendimento ao usuário"
+                    ]
+                },
+                {
+                    id: "tec_desk",
+                    name: "Service Desk, ITIL & Normativos",
+                    topics: [
+                        "ITIL v4 aplicado ao suporte: função da Central de Serviços (Service Desk)",
+                        "Gestão de Incidentes e Requisições: ciclo de vida do chamado (registro a encerramento)",
+                        "Conceitos de Acordo de Nível de Serviço (SLA) e acompanhamento de prazos",
+                        "Operação em ferramentas ITSM (Jira Service Management, GLPI ou OTRS)",
+                        "Técnicas de atendimento, comunicação com o usuário e inventário de TI",
+                        "Normativos CNJ: Governança PJe/PDPJ-Br (Res. 335/2020), Segurança (Res. 396/2021) e Requisitos (Res. 522/2023)"
                     ]
                 }
             ]
         };
 
-        let currentCargo = 'analista';
-        let state = {};
+        // App State Variables
+        let currentRole = 'analista';
+        let userProgress = {};
+        let activeSubjectIndex = 0;
+        let chartInstance = null;
+
+        // Initialize App on load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadRemoteState();
+            initCountdown();
+        });
 
         function setSyncStatus(msg, type) {
-            const el = document.getElementById('sync-status');
+            const el = document.getElementById('syncStatus');
             el.innerText = msg;
             el.className = `status-sync sync-${type}`;
         }
 
         async function loadRemoteState() {
-            setSyncStatus('Carregando da nuvem...', 'loading');
+            setSyncStatus('Carregando...', 'loading');
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': MASTER_KEY }
                 });
-                if (!res.ok) throw new Error('Erro ao carregar dados');
+                if (!res.ok) throw new Error('Falha ao conectar com o JSONBin');
                 const data = await res.json();
-                state = data.record || {};
+                userProgress = data.record || {};
+                
+                // Recuperar cargo salvo na nuvem ou manter analista
+                if (userProgress._currentRole) {
+                    currentRole = userProgress._currentRole;
+                    document.getElementById('roleSelector').value = currentRole;
+                }
+
                 setSyncStatus('Sincronizado', 'success');
-                renderTopics();
-                updateMetrics();
+                loadRoleData();
             } catch (err) {
                 console.error(err);
-                setSyncStatus('Erro ao carregar', 'error');
+                setSyncStatus('Erro de conexão', 'error');
+                loadRoleData(); // Fallback para visualização vazia
             }
         }
 
         async function saveRemoteState() {
-            setSyncStatus('Salvando na nuvem...', 'loading');
+            setSyncStatus('Salvando...', 'loading');
+            userProgress._currentRole = currentRole;
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
                     method: 'PUT',
@@ -208,9 +475,9 @@
                         'Content-Type': 'application/json',
                         'X-Master-Key': MASTER_KEY
                     },
-                    body: JSON.stringify(state)
+                    body: JSON.stringify(userProgress)
                 });
-                if (!res.ok) throw new Error('Erro ao salvar');
+                if (!res.ok) throw new Error('Falha ao salvar dados');
                 setSyncStatus('Salvo com sucesso', 'success');
                 updateMetrics();
             } catch (err) {
@@ -219,148 +486,258 @@
             }
         }
 
-        function switchCargo(cargo, evt) {
-            currentCargo = cargo;
-            document.querySelectorAll('.btn-cargo').forEach(b => b.classList.remove('active'));
-            evt.target.classList.add('active');
+        function changeRole(newRole) {
+            currentRole = newRole;
+            activeSubjectIndex = 0;
+            saveRemoteState();
+            loadRoleData();
+        }
+
+        function getActiveSubjects() {
+            return [...syllabusData.common, ...syllabusData[currentRole]];
+        }
+
+        function loadRoleData() {
+            renderTabs();
             renderTopics();
             updateMetrics();
         }
 
-        function getKey(cargo, materiaIdx, topicoIdx) {
-            return `${cargo}_m${materiaIdx}_t${topicoIdx}`;
-        }
-
-        function renderTopics() {
-            const container = document.getElementById('content-container');
+        function renderTabs() {
+            const subjects = getActiveSubjects();
+            const container = document.getElementById('subjectTabs');
             container.innerHTML = '';
 
-            editalData[currentCargo].forEach((mat, mIdx) => {
-                const group = document.createElement('div');
-                group.className = 'subject-group';
-                
-                let html = `
-                    <div class="subject-header">${mat.materia}</div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Assunto / Tópico do Edital</th>
-                                <th class="checkbox-cell">Teoria</th>
-                                <th class="checkbox-cell">Resumo</th>
-                                <th class="checkbox-cell">Revisão</th>
-                                <th style="width: 200px;">Questões (Feitas / Acertos)</th>
-                                <th style="width: 100px;">Precisão</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-
-                mat.topicos.forEach((top, tIdx) => {
-                    const key = getKey(currentCargo, mIdx, tIdx);
-                    const itemData = state[key] || { t: false, r: false, rev: false, qTotal: 0, qCorrect: 0 };
-
-                    const accuracy = itemData.qTotal > 0 ? Math.round((itemData.qCorrect / itemData.qTotal) * 100) : 0;
-                    let badgeClass = 'badge-good';
-                    if (accuracy < 60) badgeClass = 'badge-danger';
-                    else if (accuracy < 80) badgeClass = 'badge-warning';
-
-                    html += `
-                        <tr class="topic-row" data-title="${top.toLowerCase()}">
-                            <td>${top}</td>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" ${itemData.t ? 'checked' : ''} onchange="toggleCheck('${key}', 't')">
-                            </td>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" ${itemData.r ? 'checked' : ''} onchange="toggleCheck('${key}', 'r')">
-                            </td>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" ${itemData.rev ? 'checked' : ''} onchange="toggleCheck('${key}', 'rev')">
-                            </td>
-                            <td>
-                                <div class="questions-input">
-                                    <input type="number" min="0" placeholder="Total" value="${itemData.qTotal || ''}" onchange="updateQuestions('${key}', 'qTotal', this.value)">
-                                    /
-                                    <input type="number" min="0" placeholder="Acertos" value="${itemData.qCorrect || ''}" onchange="updateQuestions('${key}', 'qCorrect', this.value)">
-                                </div>
-                            </td>
-                            <td>
-                                ${itemData.qTotal > 0 ? `<span class="badge-accuracy ${badgeClass}">${accuracy}%</span>` : '-'}
-                            </td>
-                        </tr>
-                    `;
-                });
-
-                html += `</tbody></table>`;
-                group.innerHTML = html;
-                container.appendChild(group);
+            subjects.forEach((subj, idx) => {
+                const isSelected = idx === activeSubjectIndex;
+                const btn = document.createElement('button');
+                btn.className = `px-4 py-2 text-xs font-semibold rounded-lg whitespace-nowrap transition-all border ${
+                    isSelected 
+                    ? 'bg-blue-600 text-white border-blue-500 shadow-md' 
+                    : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-750 hover:text-slate-200'
+                }`;
+                btn.innerText = subj.name;
+                btn.onclick = () => {
+                    activeSubjectIndex = idx;
+                    renderTabs();
+                    renderTopics();
+                };
+                container.appendChild(btn);
             });
         }
 
-        function toggleCheck(key, field) {
-            if (!state[key]) state[key] = {};
-            state[key][field] = !state[key][field];
-            saveRemoteState();
-            renderTopics();
+        function renderTopics() {
+            const subjects = getActiveSubjects();
+            const currentSubject = subjects[activeSubjectIndex];
+            
+            document.getElementById('currentSubjectTitle').innerText = currentSubject.name;
+            document.getElementById('currentSubjectSubtitle').innerText = `${currentSubject.topics.length} tópicos mapeados no edital`;
+
+            const tableBody = document.getElementById('topicsTableBody');
+            tableBody.innerHTML = '';
+
+            currentSubject.topics.forEach((topicName, idx) => {
+                const topicKey = `${currentRole}_${currentSubject.id}_${idx}`;
+                const prog = userProgress[topicKey] || { theory: false, summary: false, qTotal: 0, qCorrect: 0, revision: false };
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-750 transition-colors border-b border-slate-700/40";
+                
+                let accuracyBadge = '';
+                if (prog.qTotal > 0) {
+                    const acc = Math.round((prog.qCorrect / prog.qTotal) * 100);
+                    let colorClass = acc >= 80 ? 'bg-emerald-950 text-emerald-400 border-emerald-800' : (acc >= 60 ? 'bg-amber-950 text-amber-400 border-amber-800' : 'bg-red-950 text-red-400 border-red-800');
+                    accuracyBadge = `<span class="ml-2 px-1.5 py-0.5 text-[10px] border font-bold rounded ${colorClass}">${acc}%</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-center font-bold text-slate-500">${String(idx + 1).padStart(2, '0')}</td>
+                    <td class="py-3 px-4 font-medium text-slate-200">${topicName}</td>
+                    
+                    <td class="py-3 px-2 text-center">
+                        <input type="checkbox" ${prog.theory ? 'checked' : ''} onchange="updateTopicStatus('${topicKey}', 'theory', this.checked)" class="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500 cursor-pointer">
+                    </td>
+                    
+                    <td class="py-3 px-2 text-center">
+                        <input type="checkbox" ${prog.summary ? 'checked' : ''} onchange="updateTopicStatus('${topicKey}', 'summary', this.checked)" class="w-4 h-4 text-indigo-600 bg-slate-700 border-slate-600 rounded focus:ring-indigo-500 cursor-pointer">
+                    </td>
+                    
+                    <td class="py-3 px-4 text-center">
+                        <div class="flex items-center justify-center space-x-1">
+                            <input type="number" min="0" placeholder="Total" value="${prog.qTotal || ''}" onchange="updateTopicQuestions('${topicKey}', 'qTotal', this.value)" class="w-16 bg-slate-700 text-center text-xs text-white border border-slate-600 rounded px-1 py-1 focus:outline-none focus:border-blue-500">
+                            <span class="text-slate-500">/</span>
+                            <input type="number" min="0" placeholder="Acertos" value="${prog.qCorrect || ''}" onchange="updateTopicQuestions('${topicKey}', 'qCorrect', this.value)" class="w-16 bg-slate-700 text-center text-xs text-emerald-400 font-bold border border-slate-600 rounded px-1 py-1 focus:outline-none focus:border-emerald-500">
+                            ${accuracyBadge}
+                        </div>
+                    </td>
+                    
+                    <td class="py-3 px-2 text-center">
+                        <input type="checkbox" ${prog.revision ? 'checked' : ''} onchange="updateTopicStatus('${topicKey}', 'revision', this.checked)" class="w-4 h-4 text-amber-500 bg-slate-700 border-slate-600 rounded focus:ring-amber-500 cursor-pointer">
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
         }
 
-        function updateQuestions(key, field, val) {
-            if (!state[key]) state[key] = {};
-            state[key][field] = parseInt(val) || 0;
+        function updateTopicStatus(key, field, value) {
+            if (!userProgress[key]) userProgress[key] = { theory: false, summary: false, qTotal: 0, qCorrect: 0, revision: false };
+            userProgress[key][field] = value;
+            saveRemoteState();
+        }
+
+        function updateTopicQuestions(key, field, value) {
+            if (!userProgress[key]) userProgress[key] = { theory: false, summary: false, qTotal: 0, qCorrect: 0, revision: false };
+            const numVal = parseInt(value) || 0;
+            userProgress[key][field] = numVal;
+            
+            if (field === 'qCorrect' && userProgress[key].qCorrect > userProgress[key].qTotal) {
+                userProgress[key].qTotal = userProgress[key].qCorrect;
+            }
             saveRemoteState();
             renderTopics();
         }
 
         function updateMetrics() {
+            const subjects = getActiveSubjects();
             let totalTopics = 0;
             let theoryDone = 0;
             let summaryDone = 0;
             let revisionDone = 0;
-            let totalQ = 0;
-            let correctQ = 0;
+            let questionsTotal = 0;
+            let questionsCorrect = 0;
 
-            editalData[currentCargo].forEach((mat, mIdx) => {
-                mat.topicos.forEach((top, tIdx) => {
-                    totalTopics++;
-                    const key = getKey(currentCargo, mIdx, tIdx);
-                    const item = state[key] || {};
-                    if (item.t) theoryDone++;
-                    if (item.r) summaryDone++;
-                    if (item.rev) revisionDone++;
-                    if (item.qTotal) {
-                        totalQ += item.qTotal;
-                        correctQ += (item.qCorrect || 0);
-                    }
+            let subjectScores = [];
+
+            subjects.forEach(subj => {
+                let subjTopicsCount = subj.topics.length;
+                let subjTheoryCount = 0;
+                totalTopics += subjTopicsCount;
+
+                subj.topics.forEach((_, idx) => {
+                    const key = `${currentRole}_${subj.id}_${idx}`;
+                    const prog = userProgress[key] || {};
+
+                    if (prog.theory) { theoryDone++; subjTheoryCount++; }
+                    if (prog.summary) summaryDone++;
+                    if (prog.revision) revisionDone++;
+                    if (prog.qTotal) questionsTotal += prog.qTotal;
+                    if (prog.qCorrect) questionsCorrect += prog.qCorrect;
                 });
+
+                const subjCompletion = subjTopicsCount > 0 ? Math.round((subjTheoryCount / subjTopicsCount) * 100) : 0;
+                subjectScores.push({ name: subj.name.split('&')[0].trim(), completion: subjCompletion });
             });
 
-            const tPerc = totalTopics > 0 ? Math.round((theoryDone / totalTopics) * 100) : 0;
-            const sPerc = totalTopics > 0 ? Math.round((summaryDone / totalTopics) * 100) : 0;
-            const rPerc = totalTopics > 0 ? Math.round((revisionDone / totalTopics) * 100) : 0;
-            const qAcc = totalQ > 0 ? Math.round((correctQ / totalQ) * 100) : 0;
+            const theoryPct = totalTopics > 0 ? Math.round((theoryDone / totalTopics) * 100) : 0;
+            const summaryPct = totalTopics > 0 ? Math.round((summaryDone / totalTopics) * 100) : 0;
+            const revisionPct = totalTopics > 0 ? Math.round((revisionDone / totalTopics) * 100) : 0;
+            const questionsPct = questionsTotal > 0 ? Math.round((questionsCorrect / questionsTotal) * 100) : 0;
 
-            document.getElementById('theory-perc').innerText = `${tPerc}%`;
-            document.getElementById('theory-bar').style.width = `${tPerc}%`;
+            document.getElementById('metricTheoryVal').innerText = `${theoryPct}%`;
+            document.getElementById('metricTheorySub').innerText = `${theoryDone} / ${totalTopics} tópicos`;
+            document.getElementById('barTheory').style.width = `${theoryPct}%`;
 
-            document.getElementById('summary-perc').innerText = `${sPerc}%`;
-            document.getElementById('summary-bar').style.width = `${sPerc}%`;
+            document.getElementById('metricSummaryVal').innerText = `${summaryPct}%`;
+            document.getElementById('metricSummarySub').innerText = `${summaryDone} / ${totalTopics} tópicos`;
+            document.getElementById('barSummary').style.width = `${summaryPct}%`;
 
-            document.getElementById('revision-perc').innerText = `${rPerc}%`;
-            document.getElementById('revision-bar').style.width = `${rPerc}%`;
+            document.getElementById('metricRevisionVal').innerText = `${revisionPct}%`;
+            document.getElementById('metricRevisionSub').innerText = `${revisionDone} / ${totalTopics} tópicos`;
+            document.getElementById('barRevision').style.width = `${revisionPct}%`;
 
-            document.getElementById('accuracy-perc').innerText = `${qAcc}%`;
-            document.getElementById('accuracy-bar').style.width = `${qAcc}%`;
+            document.getElementById('metricQuestionsVal').innerText = `${questionsPct}%`;
+            document.getElementById('metricQuestionsSub').innerText = `${questionsCorrect} / ${questionsTotal} acertos`;
+            document.getElementById('barQuestions').style.width = `${questionsPct}%`;
+
+            document.getElementById('chartOverall').innerText = `${theoryPct}% Concluído`;
+
+            renderChart(subjectScores);
+        }
+
+        function renderChart(scores) {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: scores.map(s => s.name),
+                    datasets: [{
+                        label: '% Teoria Vencida',
+                        data: scores.map(s => s.completion),
+                        backgroundColor: 'rgba(59, 130, 246, 0.25)',
+                        borderColor: '#3b82f6',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#60a5fa'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#334155' },
+                            grid: { color: '#334155' },
+                            pointLabels: { color: '#94a3b8', font: { size: 10 } },
+                            ticks: { display: false, backdropColor: 'transparent' },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
         }
 
         function filterTopics() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            document.querySelectorAll('.topic-row').forEach(row => {
-                const text = row.getAttribute('data-title');
-                row.style.display = text.includes(query) ? '' : 'none';
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#topicsTableBody tr');
+
+            rows.forEach(row => {
+                const text = row.children[1].innerText.toLowerCase();
+                if (text.includes(input)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
             });
         }
 
-        // Carregar dados na nuvem assim que iniciar
-        loadRemoteState();
+        function initCountdown() {
+            const examDate = new Date('2027-01-31T00:00:00');
+            
+            function updateTimer() {
+                const now = new Date();
+                const diff = examDate - now;
+
+                if (diff <= 0) {
+                    document.getElementById('countdown').innerText = 'Dia da prova!';
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+                document.getElementById('countdown').innerText = `${days} dias, ${hours}h e ${mins}m até a prova (31/01/2027)`;
+            }
+
+            updateTimer();
+            setInterval(updateTimer, 60000);
+        }
+
+        async function resetData() {
+            if (confirm("Tem certeza que deseja zerar todos os seus dados salvos na nuvem? Esta ação não pode ser desfeita.")) {
+                userProgress = {};
+                await saveRemoteState();
+                loadRoleData();
+            }
+        }
     </script>
 </body>
 </html>
