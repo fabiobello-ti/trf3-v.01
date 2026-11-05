@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Estudos - TRF 3ª Região (TI)</title>
+    <title>Painel de Estudos TRF 3ª Região - TI</title>
+    <!-- Chart.js para os gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #1e3a8a;
@@ -46,7 +48,7 @@
         .search-box { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; width: 300px; max-width: 100%; }
 
         .subject-group { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; }
-        .subject-header { background: #f1f5f9; padding: 16px 20px; font-weight: 700; color: var(--primary); border-bottom: 1px solid var(--border); }
+        .subject-header { background: #f1f5f9; padding: 16px 20px; font-weight: 700; color: var(--primary); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
 
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th, td { padding: 12px 20px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
@@ -74,7 +76,7 @@
                     <p style="color: var(--text-secondary);">Acompanhamento de Evolução Sincronizado na Nuvem</p>
                 </div>
                 <div>
-                    <span id="sync-status" class="status-sync sync-loading">A carregar dados...</span>
+                    <span id="sync-status" class="status-sync sync-loading">Carregando dados...</span>
                 </div>
             </div>
             <div class="cargo-selector">
@@ -114,7 +116,7 @@
     </div>
 
     <script>
-        // CONFIGURAÇÃO DO JSONBIN
+        // CONFIGURAÇÃO DO JSONBIN.IO
         const BIN_ID = '6aec0037ac6210605a6de5e9'; 
         const MASTER_KEY = '$2a$10$ujPVLI/czWsKqPrcYiR/neml.9g0xAlzDLGarjgM4hZbRUtUcBJgu'; 
 
@@ -180,12 +182,12 @@
         }
 
         async function loadRemoteState() {
-            setSyncStatus('A carregar da nuvem...', 'loading');
+            setSyncStatus('Carregando da nuvem...', 'loading');
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': MASTER_KEY }
                 });
-                if (!res.ok) throw new Error('Erro na requisição');
+                if (!res.ok) throw new Error('Erro ao carregar dados');
                 const data = await res.json();
                 state = data.record || {};
                 setSyncStatus('Sincronizado', 'success');
@@ -193,12 +195,12 @@
                 updateMetrics();
             } catch (err) {
                 console.error(err);
-                setSyncStatus('Erro ao carregar dados', 'error');
+                setSyncStatus('Erro ao carregar', 'error');
             }
         }
 
         async function saveRemoteState() {
-            setSyncStatus('A guardar na nuvem...', 'loading');
+            setSyncStatus('Salvando na nuvem...', 'loading');
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
                     method: 'PUT',
@@ -209,11 +211,11 @@
                     body: JSON.stringify(state)
                 });
                 if (!res.ok) throw new Error('Erro ao salvar');
-                setSyncStatus('Guardado com sucesso', 'success');
+                setSyncStatus('Salvo com sucesso', 'success');
                 updateMetrics();
             } catch (err) {
                 console.error(err);
-                setSyncStatus('Erro ao guardar', 'error');
+                setSyncStatus('Erro ao salvar', 'error');
             }
         }
 
@@ -357,7 +359,7 @@
             });
         }
 
-        // Inicializar a aplicação carregando os dados remotos
+        // Carregar dados na nuvem assim que iniciar
         loadRemoteState();
     </script>
 </body>
